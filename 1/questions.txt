@@ -1,0 +1,26 @@
+# Questions
+
+## 1 CPU
+### 1.1 Shortly describe, how sysbench performs CPU benchmark. What does the resulting events/s value represent?
+Sysbench will verify prime numbers between 1 and 20000 by doing standard division of the number by all numbers between 2 and the square root of the number. If any number gives a remainder of 0, the next number is calculated.
+
+### 1.2 Look at the plots of your long-term measurements. Do you see any seasonal changes?
+No seasonal changes can be seen in either AWS or GCP. Only a constant noise at both providers.
+
+## 2 Memory
+### 2.1 Shortly describe, how sysbench measures memory performance. 
+the benchmark application will allocate a memory buffer and then read or write from it, each time for the size of a pointer and each execution until the total buffer size has been read from or written to. This is then repeated until the provided volume is reached. Users can provide multiple threads, different sizes in buffer and the type of requests. 
+
+### 2.2 How would you expect virtualization to affect the memory benchmark? Why? 
+It is safe to assume that memory access in a virtualized environment generally takes longer than in a native system. Among other things, this is due to more failed TLB lookups, since theTLB entries lose their validity more often due to the high frequency of process changes.
+
+## 3 Disk
+### 3.1 Shortly describe, how sysbench performs the disk benchmarks. 
+SysBench performs checksums validation on all data read from the disk. On each write operation the block is filled with random values, then the checksum is calculated and stored in the block along with the offset of this block within a file. On each read operation the block is validated by comparing the stored offset with the real offset, and the stored checksum with the real calculated checksum.
+
+### 3.2 Compare the results for the two operations (sequential, random). What are reasons for the differences?
+Sequential access is recognizably worse than random access. Under normal circumstances, this should be the other way around. But we can imagine that a virtual HD is also divided among several physical disks. This also increases the overhead for sequential access.
+
+## 4 General
+#### 4.1 Compare the overall long-term measurement plots for the two platforms AWS and GCP. Name one type of application that you would expect to perform better on AWS, and one that would perform better on GCP, respectively. Shortly explain your decisions.
+Basically, GCP is ahead in all benchmarks, except for randomized memory access. For this reason, we would rather run everything at GCP. Except maybe a pure data storage.
